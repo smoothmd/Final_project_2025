@@ -1,0 +1,34 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<h1>Interactive Map with HERE API</h1>
+
+<!-- Map Container -->
+<div id="my_map_div" style="width:100%; height:500px; max-width:1000px;"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function initialize_map() {
+            // Initialize the map and set the view
+            let map = L.map('my_map_div').setView([57.4235, -6.7879], 8);
+
+            // HERE API URL
+            let url = "https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/jpeg";
+            url += "?size=256&style=explore.satellite.day&apiKey={{ here_api_key }}";
+
+            // Add HERE tile layer
+            L.tileLayer(url, {
+                maxZoom: 18,
+                attribution: '&copy; 2024 HERE Technologies'
+            }).addTo(map);
+
+            // Add a marker with a popup
+            let marker = L.marker([57.4235, -6.7879]).addTo(map);
+            marker.bindPopup("<b>Nest Point Lighthouse</b><br>A lighthouse on the westernmost point of Skye, known for stunning sunsets and views.").openPopup();
+        }
+
+        // Initialize the map
+        initialize_map();
+    });
+</script>
+{% endblock %}

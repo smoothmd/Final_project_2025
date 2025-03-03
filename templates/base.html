@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="My Django App description">
+    <meta name="keywords" content="django, app, keywords">
+    <meta name="author" content="Mason">
+    <link rel="icon" href="{% static 'my_app/favicon.ico' %}">
+
+    <title>{% block title %}My Django App{% endblock %}</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Your custom styles -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- Extra CSS for specific pages -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="body-class">
+    <!-- Header with navigation bar -->
+    <header>
+        <nav class="nav-class">
+            <ul>
+                <li><a href="{% url 'index' %}" class="nav-link-class">Homepage</a></li>
+                <li><a href="{% url 'login' %}" class="nav-link-class">Login</a></li>
+                <li><a href="{% url 'profile' %}" class="nav-link-class">Profile</a></li>
+                <li><a href="{% url 'signup' %}" class="nav-link-class">Sign Up</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main content block -->
+    <main>
+        {% block content %}
+        <!-- Child templates will inject their content here -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 My Django App. All rights reserved.</p>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Extra JS for specific pages -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
