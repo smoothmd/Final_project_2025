@@ -7,7 +7,7 @@
     <meta name="description" content="My Django App description">
     <meta name="keywords" content="django, app, keywords">
     <meta name="author" content="Mason">
-    <link rel="icon" href="{% static 'my_app/favicon.ico' %}">
+   
 
     <title>{% block title %}My Django App{% endblock %}</title>
 
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
     <!-- Your custom styles -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'map_app2/css/styles.css' %}">
 
     <!-- Extra CSS for specific pages -->
     {% block extra_css %}{% endblock %}
@@ -25,10 +25,7 @@
     <header>
         <nav class="nav-class">
             <ul>
-                <li><a href="{% url 'index' %}" class="nav-link-class">Homepage</a></li>
-                <li><a href="{% url 'login' %}" class="nav-link-class">Login</a></li>
-                <li><a href="{% url 'profile' %}" class="nav-link-class">Profile</a></li>
-                <li><a href="{% url 'signup' %}" class="nav-link-class">Sign Up</a></li>
+                
             </ul>
         </nav>
     </header>

@@ -14,10 +14,13 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-    <!-- Your custom styles -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
-    <!-- Extra CSS for specific pages -->
+    <!-- Your custom styles (✅ FIXED PATH) -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+     
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> 
+    
+     <!-- Extra CSS for specific pages -->
     {% block extra_css %}{% endblock %}
 </head>
 <body class="body-class">
@@ -25,10 +28,7 @@
     <header>
         <nav class="nav-class">
             <ul>
-                <li><a href="{% url 'index' %}" class="nav-link-class">Homepage</a></li>
-                <li><a href="{% url 'login' %}" class="nav-link-class">Login</a></li>
-                <li><a href="{% url 'profile' %}" class="nav-link-class">Profile</a></li>
-                <li><a href="{% url 'signup' %}" class="nav-link-class">Sign Up</a></li>
+              
             </ul>
         </nav>
     </header>
@@ -52,3 +52,4 @@
     {% block extra_js %}{% endblock %}
 </body>
 </html>
+

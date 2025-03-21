@@ -8,27 +8,47 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        function initialize_map() {
-            // Initialize the map and set the view
-            let map = L.map('my_map_div').setView([57.4235, -6.7879], 8);
+    function initialize_map() {
+        // Initialize the map and set the view
+        let map = L.map('my_map_div').setView([37.7749, -122.4194], 5); // Default view over the US
 
-            // HERE API URL
-            let url = "https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/jpeg";
-            url += "?size=256&style=explore.satellite.day&apiKey={{ here_api_key }}";
+        // Add a tile layer (Using OpenStreetMap as an example)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-            // Add HERE tile layer
-            L.tileLayer(url, {
-                maxZoom: 18,
-                attribution: '&copy; 2024 HERE Technologies'
-            }).addTo(map);
+        // Weather API Key (Replace with your own key)
+        let weatherApiKey = 'd8ce9a0459e8af6304146f143474c4e7';
+        let cities = [
+            { name: "San Francisco", lat: 37.7749, lon: -122.4194 },
+            { name: "New York", lat: 40.7128, lon: -74.0060 },
+            { name: "Chicago", lat: 41.8781, lon: -87.6298 }
+        ];
 
-            // Add a marker with a popup
-            let marker = L.marker([57.4235, -6.7879]).addTo(map);
-            marker.bindPopup("<b>Nest Point Lighthouse</b><br>A lighthouse on the westernmost point of Skye, known for stunning sunsets and views.").openPopup();
+        // Function to fetch weather data
+        function fetchWeather(city) {
+            let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&appid=${weatherApiKey}&units=metric`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    let weatherDescription = data.weather[0].description;
+                    let temperature = data.main.temp;
+                    
+                    // Add marker with weather data
+                    let marker = L.marker([city.lat, city.lon]).addTo(map);
+                    marker.bindPopup(`<b>${city.name}</b><br>Temp: ${temperature}°C<br>${weatherDescription}`).openPopup();
+                })
+                .catch(error => console.log("Error fetching weather data:", error));
         }
 
-        // Initialize the map
-        initialize_map();
-    });
+        // Fetch weather for each city
+        cities.forEach(fetchWeather);
+    }
+
+    // Initialize the map
+    initialize_map();
+});
 </script>
 {% endblock %}

@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from map_app2 import views  # Import views from your accounts app
+from map_app2 import views
+from django.conf import settings
+from django.conf.urls.static import static  # Import views from your accounts app
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('map_app2/', include('map_app2.urls')),
-    path('', views.index, name='home'),  # Add this line to set a homepage
-]
+    
+] 
+

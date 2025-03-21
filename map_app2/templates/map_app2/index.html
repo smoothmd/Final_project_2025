@@ -1,7 +1,14 @@
 {% extends "base.html" %} 
 
 {% block content %}
-<head></head>
+<head>
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+        <!-- Leaflet JavaScript -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+       
 <h1>Interactive Map with HERE API</h1>
 
 <!-- Map Container -->
@@ -15,7 +22,7 @@
 
             // HERE API URL
             let url = "https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/jpeg";
-            url += "?size=256&style=explore.satellite.day&apiKey={{ dXSJuxAJbzG94hsS2UMQ }}";
+            url += "?size=256&style=explore.satellite.day&apiKey={{ xZGoBpRe0TXa_LrY_TNLFAPilB_rNQ8vZjO7mzjEi20 }}";
 
             // Add HERE tile layer
             L.tileLayer(url, {
