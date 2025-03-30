@@ -20,7 +20,7 @@ p {
         }
 /* Body background */
 .body-class {
-    background: linear-gradient(to right, #00bcd4, #004d40); /* Gradient from light blue to dark green */
+    background: linear-gradient(to right, #d40020a1, #9398a4); /* Gradient from red to white */
     font-family: Helvetica, Arial, sans-serif;
 }
 
@@ -66,13 +66,13 @@ p {
 
 /* Navigation Bar */
 .nav-class {
-    background-color: CadetBlue;
+    background-color: rgba(255, 0, 0, 0.852);
     font-weight: bold;
     padding: 10px 20px;
 }
 
 .nav-class:hover {
-    background-color: #003333; /* Darken on hover */
+    background-color: #000000; /* Darken on hover */
 }
 
 .hero-section-class{
@@ -140,7 +140,7 @@ border-color: #333 ;
     height: 1px;
     width: 100%;
     left: 0;
-    background-color: #0000FF;
+    background-color: #ff0e0e;
     transition: 0.3s;
     transition-timing-function: easy-in-out;
     transform: scaleX(0)

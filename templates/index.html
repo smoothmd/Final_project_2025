@@ -5,50 +5,151 @@
 
 <!-- Map Container -->
 <div id="my_map_div" style="width:100%; height:500px; max-width:1000px;"></div>
+<button id="toggleUnit">Change temperature </button>
+
+<!-- Weather Info Panel -->
+<!-- <div id="infoPanel" style="
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;">
+    <h3>Click on the map to see weather info</h3>
+</div> -->
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    function initialize_map() {
-        // Initialize the map and set the view
-        let map = L.map('my_map_div').setView([37.7749, -122.4194], 5); // Default view over the US
-
-        // Add a tile layer (Using OpenStreetMap as an example)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Weather API Key (Replace with your own key)
-        let weatherApiKey = 'd8ce9a0459e8af6304146f143474c4e7';
-        let cities = [
-            { name: "San Francisco", lat: 37.7749, lon: -122.4194 },
-            { name: "New York", lat: 40.7128, lon: -74.0060 },
-            { name: "Chicago", lat: 41.8781, lon: -87.6298 }
-        ];
-
-        // Function to fetch weather data
-        function fetchWeather(city) {
-            let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&appid=${weatherApiKey}&units=metric`;
-
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    let weatherDescription = data.weather[0].description;
-                    let temperature = data.main.temp;
-                    
-                    // Add marker with weather data
-                    let marker = L.marker([city.lat, city.lon]).addTo(map);
-                    marker.bindPopup(`<b>${city.name}</b><br>Temp: ${temperature}°C<br>${weatherDescription}`).openPopup();
-                })
-                .catch(error => console.log("Error fetching weather data:", error));
-        }
-
-        // Fetch weather for each city
-        cities.forEach(fetchWeather);
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    let useFahrenheit = false; // Track temperature unit
 
     // Initialize the map
-    initialize_map();
+    let map = L.map('my_map_div').setView([37.7749, -122.4194], 5);
+
+    // HERE API Tile Layer
+    let hereApiKey = "xZGoBpRe0TXa_LrY_TNLFAPilB_rNQ8vZjO7mzjEi20";
+    let url = `https://2.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${hereApiKey}`;
+    L.tileLayer(url, { maxZoom: 18, attribution: '&copy; 2024 HERE Technologies' }).addTo(map);
+
+    let weatherAPIKey = "d8ce9a0459e8af6304146f143474c4e7"; // OpenWeather API Key
+
+    // Function to perform reverse geocoding and get location name
+    function getLocationName(lat, lon, callback) {
+        let geocodeURL = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+        fetch(geocodeURL)
+        .then(response => response.json())
+        .then(data => {
+            let locationName = data.address.city || data.address.town || data.address.village || "Unknown Location";
+            callback(locationName);
+        })
+        .catch(error => {
+            console.error('Error with reverse geocoding:', error);
+            callback("Unknown Location");
+        });
+    }
+
+    // Function to fetch weather data and add markers
+    function getWeatherData(lat, lon, isClick = false) {
+        let weatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherAPIKey}&units=metric`;
+
+        fetch(weatherURL)
+        .then(response => response.json())
+        .then(data => {
+            let temp = data.main.temp;
+            let windSpeed = data.wind.speed;
+            let description = data.weather[0].description;
+
+            // Convert to Fahrenheit if needed
+            if (useFahrenheit) {
+                temp = (temp * 9/5) + 32;
+            }
+
+            // Perform reverse geocoding to get the city name
+            getLocationName(lat, lon, function(locationName) {
+                let popupContent = `
+                    <b>${locationName}</b><br>
+                    <b>Coordinates:</b> ${lat.toFixed(4)}, ${lon.toFixed(4)}<br>
+                    <b>Temperature:</b> ${temp.toFixed(1)}° ${useFahrenheit ? 'F' : 'C'}<br>
+                    <b>Wind Speed:</b> ${windSpeed} m/s<br>
+                    <b>Condition:</b> ${description}
+                `;
+
+                let marker = L.marker([lat, lon]).addTo(map);
+                marker.bindPopup(popupContent).openPopup();
+
+                // Update side panel if click event
+                if (isClick) {
+                    let infoPanel = document.getElementById("infoPanel");
+                    if (infoPanel) {
+                        infoPanel.innerHTML = `
+                            <h3>Weather Info</h3>
+                            <p><b>Location:</b> ${locationName}</p>
+                            <p><b>Coordinates:</b> ${lat.toFixed(4)}, ${lon.toFixed(4)}</p>
+                            <p><b>Temperature:</b> ${temp.toFixed(1)}° ${useFahrenheit ? 'F' : 'C'}</p>
+                            <p><b>Wind Speed:</b> ${windSpeed} m/s</p>
+                            <p><b>Condition:</b> ${description}</p>
+                        `;
+                    } else {
+                        console.warn("infoPanel element not found.");
+                    }
+                }
+
+                // Add a color-coded weather overlay marker
+                addWeatherOverlay(lat, lon, temp);
+            });
+        })
+        .catch(error => console.error('Error fetching weather data:', error));
+    }
+
+    // Function to add weather overlay
+    function addWeatherOverlay(lat, lon, temp) {
+        let tempColor = temp < 10 ? "blue" : temp < 25 ? "yellow" : "red";
+
+        L.circleMarker([lat, lon], {
+            radius: 10,
+            color: tempColor,
+            fillColor: tempColor,
+            fillOpacity: 0.6
+        }).addTo(map);
+    }
+
+    // Default locations
+    let locations = [
+        { name: "San Francisco", lat: 37.7749, lon: -122.4194 },
+        { name: "New York", lat: 40.7128, lon: -74.0060 },
+        { name: "Chicago", lat: 41.8781, lon: -87.6298 }
+    ];
+
+    locations.forEach(loc => getWeatherData(loc.lat, loc.lon));
+
+    // Toggle between Celsius and Fahrenheit
+    document.getElementById('toggleUnit').addEventListener('click', function() {
+        useFahrenheit = !useFahrenheit;
+        this.textContent = useFahrenheit ? "Switch to Celsius" : "Switch to Fahrenheit";
+
+        // Clear the map markers before updating
+        map.eachLayer(layer => {
+            if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+                map.removeLayer(layer);
+            }
+        });
+
+        locations.forEach(loc => getWeatherData(loc.lat, loc.lon));
+    });
+
+    // Click event to fetch weather and location info
+    map.on('click', function(e) {
+        let lat = e.latlng.lat;
+        let lon = e.latlng.lng;
+        getWeatherData(lat, lon, true);
+    });
+
 });
+
 </script>
+
 {% endblock %}
+xZGoBpRe0TXa_LrY_TNLFAPilB_rNQ8vZjO7mzjEi20 
+d8ce9a0459e8af6304146f143474c4e7
