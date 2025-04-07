@@ -27,9 +27,10 @@
     <!-- Header with navigation bar -->
     <header>
         <nav class="nav-class">
-            <ul>
-              
-            </ul>
+            <a href="{% url 'home' %}" class="nav-link-class">Homepage</a>
+            <a href="{% url 'login' %}" class="nav-link-class">Login</a>
+            <a href="{% url 'profile' %}" class="nav-link-class">Profile</a>
+            <a href="{% url 'signup' %}" class="nav-link-class">Sign Up</a>
         </nav>
     </header>
 

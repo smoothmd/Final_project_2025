@@ -11,3 +11,12 @@ from django.http import HttpResponse
 def home(request):
     #return HttpResponse("Hello world!")
     return render(request, 'index.html')  # Make sure this is the correct file
+
+def login(request): 
+    return render(request, 'login.html') 
+
+def signup(request): 
+    return render(request, 'signup.html') 
+
+def profile(request):
+    return render(request, 'profile.html')
