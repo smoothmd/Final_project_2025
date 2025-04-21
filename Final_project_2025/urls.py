@@ -22,8 +22,8 @@ from django.conf.urls.static import static  # Import views from your accounts ap
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('map_app2/', include('map_app2.urls')), 
-    path('', views.home, name='home')
+    path('', include('map_app2.urls')), 
+    # path('', views.home, name='home')
     
 ] 
 

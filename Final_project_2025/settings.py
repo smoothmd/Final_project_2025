@@ -66,6 +66,8 @@ TEMPLATES = [
         },
     },
 ]
+LOGIN_URL = '/login/'
+
 
 WSGI_APPLICATION = 'Final_project_2025.wsgi.application'
 
