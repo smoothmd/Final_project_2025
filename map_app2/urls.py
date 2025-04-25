@@ -9,5 +9,6 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
-    #path('logout/', LogoutView.as_view(next_page='login'), name='logout'),  # Log out
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),  # Log out 
+    path('SavedLocation/', views.save_point, name='SavedLocation'),
 ]

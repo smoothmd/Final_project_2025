@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <b>Coordinates:</b> ${lat.toFixed(4)}, ${lon.toFixed(4)}<br>
                     <b>Temperature:</b> ${temp.toFixed(1)}° ${useFahrenheit ? 'F' : 'C'}<br>
                     <b>Wind Speed:</b> ${windSpeed} m/s<br>
-                    <b>Condition:</b> ${description}
+                    <b>Condition:</b> ${description} 
+                    <button onclick='SavedLocation(${lat}, ${lon}, "${locationName}", ${temp}, ${windSpeed}, "${description}")'> Save Location</button>
                 `;
 
                 let marker = L.marker([lat, lon]).addTo(map);
@@ -147,9 +148,71 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 });
+// Call this after you get weather data
+function SavedLocation(lat, lon, locationName, temp, description) {
+    fetch('/SavedLocation/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken() // CSRF helper
+        },
+        body: JSON.stringify({
+            lat: lat,
+            lon: lon,
+            locationName: locationName,
+            temperature: temp,
+            description: description
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Saved location:', data);
+    })
+    .catch(error => {
+        console.error('Error saving point:', error);
+    });
+}
+
+// Helper to get CSRF token from cookies
+function getCSRFToken() {
+    let cookieValue = null;
+    const name = 'csrftoken';
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const trimmed = cookie.trim();
+            if (trimmed.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const savedLocations = JSON.parse(document.getElementById('saved-locations').textContent);
+
+    savedLocations.forEach(loc => {
+        L.marker([loc.latitude, loc.longitude])
+            .addTo(map)
+            .bindPopup(`<b>${loc.city}</b><br>Temp: ${loc.temperature}°C<br>Wind: ${loc.wind_speed} m/s`);
+    });
 
 </script>
-
+{{ saved_locations|json_script:"saved-locations" }}
 {% endblock %}
 xZGoBpRe0TXa_LrY_TNLFAPilB_rNQ8vZjO7mzjEi20 
 d8ce9a0459e8af6304146f143474c4e7
