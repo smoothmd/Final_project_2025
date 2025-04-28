@@ -39,35 +39,60 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+from django.shortcuts import render
+from .models import SavedLocation
+
+def dashboard(request):
+    user_saved_locations = SavedLocation.objects.filter(user=request.user)
+    saved_locations = [
+        {
+            'location': loc.city,        # Rename field for JS
+            'lat': loc.latitude,          # Rename field for JS
+            'lon': loc.longitude,         # Rename field for JS
+            'temperature': loc.temperature,
+            'wind_speed': loc.wind_speed,
+            'description': loc.description,
+        }
+        for loc in user_saved_locations
+    ]
+
+    return render(request, 'dashboard.html', {
+        'saved_locations': saved_locations,
+    })
+
+
 @login_required
 def profile_view(request):
     try:
-        # Retrieve user data
-        user = request.user
-        if not user.is_authenticated:
-            raise ValueError("User is not logged in.")
-
-        # Pass user data to the profile page
-        return render(request, 'map_app2/profile.html')
-
-    except ValueError as e:
-        # Handle case where user is not logged in
-        messages.error(request, str(e))
-
-        return redirect('map_app2/login.html')  # Redirect to login page
-#return HttpResponse('ValueError exception: '+ str(e))
+        user_saved_locations = SavedLocation.objects.filter(user=request.user)
+        saved_locations = [
+            {
+                'location': loc.city,
+                'lat': loc.latitude,
+                'lon': loc.longitude,
+                'temperature': loc.temperature,
+                'wind_speed': loc.wind_speed,
+                'description': loc.description,
+            }
+            for loc in user_saved_locations
+        ]
     except Exception as e:
-        # Handle unexpected errors
-        messages.error(request, 'An error occurred' + str(e))
+        messages.error(request, f"Error loading saved locations: {e}")
+        saved_locations = []
 
-        return redirect('map_app2/login.html')  # Redirect to login page
+    context = {
+        'user': request.user,
+        'saved_locations': saved_locations,
+    }
+    return render(request, 'map_app2/profile.html', context)
+
 #return HttpResponse('unexpected errors exception: '+ str(e))
 # Signup page view
     #return render(request, 'map_app2/profile.html', {'user': request.user})
 
 def home(request):
-   saved_locations = SavedLocation.objects.filter(user=request.user)
-   return render(request, 'index.html', {'saved_locations': saved_locations}) # Make sure this is the correct file
+   
+    return render(request, 'index.html')  # Make sure this is the correct file
 #def profile(request):
     #return render(request, 'profile.html')
 
@@ -79,13 +104,13 @@ def save_point(request):
             data = json.loads(request.body)
             print("Incoming JSON:", data)
 
-            # Map incoming keys to model fields
+            # Correct mapping
             latitude = data.get("lat")
             longitude = data.get("lon")
             city = data.get("location")
             temperature = data.get("temperature")
-            wind_speed = data.get("description")  # Assuming this is actually wind_speed
-            description = None  # If you have a separate description field
+            wind_speed = data.get("wind_speed")  
+            description = data.get("description")  # ✅ get description too
 
             if not all([city, latitude, longitude]):
                 return JsonResponse({"status": "fail", "error": "Missing required fields"}, status=400)

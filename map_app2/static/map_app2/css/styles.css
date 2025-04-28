@@ -1,49 +1,73 @@
-.header-class {
-    color: DarkGreen;
-}
-.origin-section-class{
-color: Plum;
-}
-.image-container {
-    text-align: center; /* Center the image horizontally */
-}
-
-.image-container img {
-    display: block; /* Make the image a block element */
-    margin: 0 auto; /* Center the block-level image horizontally */
-}
-p {
-
-            color: SlateBlue;
-            background-color: #333; /* Set the background color */
-            padding: 10px; /* Add padding for better visibility */
-        }
 /* Body background */
 .body-class {
-    background: linear-gradient(to right, #d40020a1, #9398a4); /* Gradient from red to white */
+    background: linear-gradient(to right, #ec082a, #9398a4); /* Gradient from red to white */
     font-family: Helvetica, Arial, sans-serif;
 }
 
-/* Hero Section with background image */
+
+/* Header */
+.header-class {
+    color: #ff0000; /* Bright red */
+}
+
+/* Origin Section */
+.origin-section-class {
+    color: #ffffff; /* White */
+}
+
+/* Image Styling */
+.image-container {
+    text-align: center;
+}
+
+.image-container img {
+    display: block;
+    margin: 0 auto;
+}
+
+
+
+/* Hero Section */
 .hero-section-class {
     background: url('path-to-your-image.jpg') no-repeat center center fixed;
     background-size: cover;
-    color: white;
+    color: #ffffff;
     padding: 40px;
     text-align: center;
 }
 
-/* Testimonials Section with background color */
+/* Testimonials Section */
 .testimonial-section-class {
-    background-color: #f5f5f5; /* Light gray */
-    color: #333;
+    background-color: #1a1a1a;
+    color: #ffffff;
     padding: 20px;
+}
+
+/* Form */
+.form-class {
+    color: #ffffff;
+}
+
+/* FAQ Section */
+.faq-section-class {
+    color: #ffffff;
+}
+
+/* Newsletter Section */
+.newsletter-section-class {
+    color: #ffffff;
+}
+
+/* Inputs */
+.input-class {
+    color: #ff0000; /* Red text */
+    background-color: #0d0d0d; /* Almost black */
 }
 
 /* Buttons */
 .button-class {
-    color: #fff;
-    background-color: #00695c;
+    color: #ffffff;
+    background-color: #0f0f0f; /* black*/
     padding: 10px 20px;
     border-radius: 5px;
     border: none;
@@ -53,114 +77,97 @@ p {
 }
 
 .button-class:hover {
-    background-color: #004d40;
+    background-color: #b30000; /* Darker red on hover */
+}
+
+/* Section Titles */
+.section-title-class {
+    color: #ff0000; /* Red */
+}
+
+/* Image Border */
+.image-class {
+    border: 10px solid #333333; /* Dark gray */
 }
 
 /* Footer */
 .footer-class {
-    background-color: #003333; /* Dark footer */
-    color: #f1f1f1;
+    background-color: #000000; /* Black */
+    color: #ffffff;
     padding: 20px;
     text-align: center;
 }
 
 /* Navigation Bar */
 .nav-class {
-    background-color: rgba(255, 0, 0, 0.852);
+    background-color: #333; /* Black */
     font-weight: bold;
     padding: 10px 20px;
-}
-
-.nav-class:hover {
-    background-color: #000000; /* Darken on hover */
-}
-
-.hero-section-class{
-color: RebeccaPurple;
-}
-.testimonial-section-class{
-color: RebeccaPurple;
-}
-.form-class{
-color: PaleVioletRed;
-}
-.faq-section-class{
-color: Navy;
-}
-.newsletter-section-class{
-color: Navy;
-}
-.input-class{
-color: Navy;
-background-color: LightCyan;
-}
-.button-class{
-color: MediumOrchid;
-}
-
-.section-title-class{
-color: Maroon;
-}
-.image-class {
-border: 10px solid #555;
-border-color: #333 ;
-}
-
-.body-class{
-    background-color:CadetBlue;
-    font-family: Helvetica;
-}
-
-
-.button-class{
-    color: SteelBlue;
-    background-color: Gainsboro
-}
-
-.footer-class {
-    background-color: Teal;
-    color: Thistle
-}
-
-/* Navigation bar styles */
-.nav-class {
-    background-color:CadetBlue;
-    font-weight: bold;
-
-}
-.nav-class{
     width: max-content;
     position: relative;
     cursor: pointer;
 }
-.nav-class::after{
+
+.nav-class::after {
     content: "";
     position: absolute;
     bottom: -5px;
     height: 1px;
     width: 100%;
     left: 0;
-    background-color: #ff0e0e;
-    transition: 0.3s;
-    transition-timing-function: easy-in-out;
-    transform: scaleX(0)
-}
-.nav-class:hover::after
-{
-    transform: scaleX(1)}
-.title-class {
-    color: SlateBlue;
-   background-color: #333;
-            text-align: left;
-            padding: 1em;
-            font-weight: bolder;
-}
-.text-class {
-    color:DarkMagenta;
+    background-color: #f8f8f8; /* Red underline */
+    transition: 0.3s ease-in-out;
+    transform: scaleX(0);
 }
 
+.nav-class:hover::after {
+    transform: scaleX(1);
+}
+
+/* Title */
+.title-class {
+    color: #ffffff;
+    background-color: #333;
+    text-align: left;
+    padding: 1em;
+    font-weight: bolder;
+}
+
+/* General Text */
+.text-class {
+    color: #ff1a1a;
+}
+
+/* Map Div */
 #my_map_div {
     width: 100%;
     height: 500px;
     max-width: 1000px;
+}
+
+/* Individual Navigation Link Styling */
+.nav-link-class {
+    color: #ff0000; /* Bright red */
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.nav-link-class:hover {
+    color: #ffffff; /* Turns white on hover */
+} 
+.shared-background {
+    background-color: #333; /* Dark background */
+    color: #ffffff; /* White text for contrast */
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.map-border-class {
+    border: 15px solid #000000; /* Red border */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Space inside the border */
+    background-color: #ffffff; /* Optional: white background inside the border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Nice shadow effect */
 }

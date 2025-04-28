@@ -1,11 +1,14 @@
 {% extends "base.html" %} 
 
 {% block content %}
-<h1>Interactive Map with HERE API</h1>
-
+<div class="shared-background">
+<h1 >Interactive Map with HERE API</h1>
+<p> To see a locations with weather data make sure to right click on the map </p> 
+<p>What the different colors mean is yellow means the temputure is kinda in the middle while blue means cold and red means hot </p> 
+</div>
 <!-- Map Container -->
-<div id="my_map_div" style="width:100%; height:500px; max-width:1000px;"></div>
-<button id="toggleUnit">Change temperature </button>
+<div id="my_map_div" class="map-border-class" style="width: 100%; height: 500px; max-width: 1000px;"></div>
+<button id="toggleUnit" class="button-class">Change temperature</button>
 
 <!-- Weather Info Panel -->
 <!-- <div id="infoPanel" style="
@@ -28,9 +31,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let map = L.map('my_map_div').setView([37.7749, -122.4194], 5);
 
     // HERE API Tile Layer
-    let hereApiKey = "xZGoBpRe0TXa_LrY_TNLFAPilB_rNQ8vZjO7mzjEi20";
-    let url = `https://2.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${hereApiKey}`;
-    L.tileLayer(url, { maxZoom: 18, attribution: '&copy; 2024 HERE Technologies' }).addTo(map);
+    //let hereApiKey = "xZGoBpRe0TXa_LrY_TNLFAPilB_rNQ8vZjO7mzjEi20";
+    //let url = `https://2.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${hereApiKey}`;
+    //L.tileLayer(url, { maxZoom: 18, attribution: '&copy; 2024 HERE Technologies' }).addTo(map);
+    // Replace your tile layer line with this:
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+     maxZoom: 19,
+     attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
     let weatherAPIKey = "d8ce9a0459e8af6304146f143474c4e7"; // OpenWeather API Key
 
@@ -159,7 +167,7 @@ function SavedLocation(lat, lon, locationName, temp, description) {
         body: JSON.stringify({
             lat: lat,
             lon: lon,
-            locationName: locationName,
+            location: locationName,
             temperature: temp,
             description: description
         })
@@ -203,16 +211,9 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-const savedLocations = JSON.parse(document.getElementById('saved-locations').textContent);
-
-    savedLocations.forEach(loc => {
-        L.marker([loc.latitude, loc.longitude])
-            .addTo(map)
-            .bindPopup(`<b>${loc.city}</b><br>Temp: ${loc.temperature}°C<br>Wind: ${loc.wind_speed} m/s`);
-    });
 
 </script>
-{{ saved_locations|json_script:"saved-locations" }}
+
 {% endblock %}
 xZGoBpRe0TXa_LrY_TNLFAPilB_rNQ8vZjO7mzjEi20 
 d8ce9a0459e8af6304146f143474c4e7

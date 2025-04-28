@@ -8,4 +8,218 @@
     {% csrf_token %}
     <button type="submit">Logout</button>
   </form>
+
+  <!-- Inject saved locations JSON -->
+  {{ saved_locations|json_script:"saved-locations" }}
+
+  <!-- Map div -->
+  <div id="my_map_div" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+
+  <!-- Optional: Toggle unit button -->
+  <button id="toggleUnit">Switch to Fahrenheit</button>
+
+  <!-- Info panel -->
+  <div id="infoPanel" style="margin-top: 20px;"></div>
+  <h2>Your Saved Locations:</h2>
+ <ul>
+  {% for location in saved_locations %}
+    <li>
+      {{ location.location }} ({{ location.lat }}, {{ location.lon }}) - 
+      Temp: {{ location.temperature }}°C, 
+      Wind: {{ location.wind_speed }} m/s, 
+      {{ location.description }}
+    </li>
+  {% empty %}
+    <li>No saved locations yet.</li>
+  {% endfor %}
+</ul>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      let useFahrenheit = false; // Track temperature unit
+  
+      // 1. Initialize the map
+      let map = L.map('my_map_div').setView([37.7749, -122.4194], 5);
+  
+      // 2. Tile layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+  
+      // 3. Load saved locations
+      const savedLocations = JSON.parse(document.getElementById('saved-locations').textContent);
+      console.log(savedLocations);
+  
+      // ✅ Just create markers for saved locations
+      function loadSavedLocations() {
+          savedLocations.forEach(loc => {
+              let temp = loc.temperature;
+              if (useFahrenheit) {
+                  temp = (temp * 9/5) + 32;
+              }
+  
+              L.marker([loc.lat, loc.lon])
+                  .addTo(map)
+                  .bindPopup(`
+                      <b>${loc.location}</b><br>
+                      Temperature: ${temp.toFixed(1)}° ${useFahrenheit ? 'F' : 'C'}<br>
+                      Wind Speed: ${loc.wind_speed} m/s<br>
+                      Condition: ${loc.description}
+                  `);
+          });
+      }
+  
+      loadSavedLocations();
+  
+      // 4. Weather-related functions
+      const weatherAPIKey = "d8ce9a0459e8af6304146f143474c4e7"; // OpenWeather API Key
+  
+      function getLocationName(lat, lon, callback) {
+          let geocodeURL = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+          fetch(geocodeURL)
+              .then(response => response.json())
+              .then(data => {
+                  let locationName = data.address.city || data.address.town || data.address.village || "Unknown Location";
+                  callback(locationName);
+              })
+              .catch(error => {
+                  console.error('Error with reverse geocoding:', error);
+                  callback("Unknown Location");
+              });
+      }
+  
+      function getWeatherData(lat, lon, isClick = false) {
+          let weatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherAPIKey}&units=metric`;
+  
+          fetch(weatherURL)
+              .then(response => response.json())
+              .then(data => {
+                  let temp = data.main.temp;
+                  let windSpeed = data.wind.speed;
+                  let description = data.weather[0].description;
+  
+                  if (useFahrenheit) {
+                      temp = (temp * 9/5) + 32;
+                  }
+  
+                  getLocationName(lat, lon, function(locationName) {
+                      let popupContent = `
+                          <b>${locationName}</b><br>
+                          <b>Coordinates:</b> ${lat.toFixed(4)}, ${lon.toFixed(4)}<br>
+                          <b>Temperature:</b> ${temp.toFixed(1)}° ${useFahrenheit ? 'F' : 'C'}<br>
+                          <b>Wind Speed:</b> ${windSpeed} m/s<br>
+                          <b>Condition:</b> ${description}<br>
+                          <button onclick='SavedLocation(${lat}, ${lon}, "${locationName}", ${temp}, ${windSpeed}, "${description}")'>Save Location</button>
+                      `;
+  
+                      let marker = L.marker([lat, lon]).addTo(map);
+                      marker.bindPopup(popupContent).openPopup();
+  
+                      if (isClick) {
+                          let infoPanel = document.getElementById("infoPanel");
+                          if (infoPanel) {
+                              infoPanel.innerHTML = `
+                                  <h3>Weather Info</h3>
+                                  <p><b>Location:</b> ${locationName}</p>
+                                  <p><b>Coordinates:</b> ${lat.toFixed(4)}, ${lon.toFixed(4)}</p>
+                                  <p><b>Temperature:</b> ${temp.toFixed(1)}° ${useFahrenheit ? 'F' : 'C'}</p>
+                                  <p><b>Wind Speed:</b> ${windSpeed} m/s</p>
+                                  <p><b>Condition:</b> ${description}</p>
+                              `;
+                          }
+                      }
+  
+                      addWeatherOverlay(lat, lon, temp);
+                  });
+              })
+              .catch(error => console.error('Error fetching weather data:', error));
+      }
+  
+      function addWeatherOverlay(lat, lon, temp) {
+          let tempColor = temp < 10 ? "blue" : temp < 25 ? "yellow" : "red";
+  
+          L.circleMarker([lat, lon], {
+              radius: 10,
+              color: tempColor,
+              fillColor: tempColor,
+              fillOpacity: 0.6
+          }).addTo(map);
+      }
+  
+      // 5. Default locations (optional)
+      let locations = [
+          { name: "Chicago", lat: 41.8781, lon: -87.6298 }
+      ];
+      locations.forEach(loc => getWeatherData(loc.lat, loc.lon));
+  
+      // 6. Toggle between Celsius and Fahrenheit
+      document.getElementById('toggleUnit').addEventListener('click', function() {
+          useFahrenheit = !useFahrenheit;
+          this.textContent = useFahrenheit ? "Switch to Celsius" : "Switch to Fahrenheit";
+  
+          // Clear map markers
+          map.eachLayer(layer => {
+              if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+                  map.removeLayer(layer);
+              }
+          });
+  
+          // Reload everything
+          loadSavedLocations();
+          locations.forEach(loc => getWeatherData(loc.lat, loc.lon));
+      });
+  
+      // 7. Click to add new points
+      map.on('click', function(e) {
+          let lat = e.latlng.lat;
+          let lon = e.latlng.lng;
+          getWeatherData(lat, lon, true);
+      });
+  
+      // 8. Save location to server
+      window.SavedLocation = function(lat, lon, locationName, temp, windSpeed, description) {
+          fetch('/SavedLocation/', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': getCSRFToken()
+              },
+              body: JSON.stringify({
+                  lat: lat,
+                  lon: lon,
+                  location: locationName,
+                  temperature: temp,
+                  wind_speed: windSpeed,
+                  description: description
+              })
+          })
+          .then(response => response.json())
+          .then(data => {
+              console.log('Saved location:', data);
+          })
+          .catch(error => {
+              console.error('Error saving point:', error);
+          });
+      }
+  
+      function getCSRFToken() {
+          let cookieValue = null;
+          const name = 'csrftoken';
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let cookie of cookies) {
+                  cookie = cookie.trim();
+                  if (cookie.startsWith(name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+  
+  });
+  </script>
+  
 {% endblock %}
